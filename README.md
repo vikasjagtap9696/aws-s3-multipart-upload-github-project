@@ -113,7 +113,7 @@ Configure credentials using your normal secure AWS CLI setup:
 aws configure
 ```
 
-> Never commit AWS access keys, secret keys, `.env` files, or other credentials to GitHub.
+>.
 
 ## Step 1 - Split the File
 

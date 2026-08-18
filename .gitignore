@@ -1,0 +1,25 @@
+# Large media files
+*.mkv
+*.mp4
+*.avi
+*.mov
+*.zip
+*.iso
+
+# Generated multipart parts
+parts/
+*.part
+
+# Real configuration / secrets
+.env
+*.env
+config/*.local.ps1
+config/*.secret.ps1
+
+# Logs and temporary files
+*.log
+*.tmp
+
+# Windows
+Thumbs.db
+Desktop.ini

@@ -1,0 +1,12 @@
+{
+  "Parts": [
+    {
+      "ETag": "EXAMPLE_ETAG_PART_1",
+      "PartNumber": 1
+    },
+    {
+      "ETag": "EXAMPLE_ETAG_PART_2",
+      "PartNumber": 2
+    }
+  ]
+}

@@ -6,38 +6,12 @@ This project demonstrates how to upload a large file to **Amazon S3** using **Mu
 
 Instead of uploading the complete file as one object, the file is divided into smaller parts. Each part is uploaded separately and finally all parts are combined into one object in Amazon S3.
 
-## 🏗️ Architecture
 
-```text
-Large File
-    │
-    ▼
-PowerShell
-    │
-    ├── Split file into 100 MB parts
-    │
-    ▼
-File Parts
-    │
-    ▼
-AWS CLI
-    │
-    ├── Create Multipart Upload
-    ├── Upload Part 1
-    ├── Upload Part 2
-    ├── Upload Part 3
-    ├── ...
-    └── Upload Part N
-    │
-    ▼
-Amazon S3
-    │
-    ▼
-Complete Multipart Upload
-    │
-    ▼
-Final Object
-```
+## 🏗️ Architecture Diagram
+
+This diagram shows the complete AWS S3 Multipart Upload workflow used in this project.
+
+![AWS S3 Multipart Upload Architecture](docs/architecture-diagram.png)
 
 ## 🛠️ Technologies Used
 

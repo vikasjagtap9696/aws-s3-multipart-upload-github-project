@@ -1,296 +1,294 @@
-# AWS S3 Multipart Upload with AWS CLI and PowerShell
+# AWS S3 Multipart Upload Using AWS CLI & PowerShell
 
-![AWS S3 Multipart Upload Working Diagram](docs/aws-s3-multipart-upload-working-diagram.png)
+## 📌 Project Overview
 
-## Project Overview
+This project demonstrates how to upload a large file to **Amazon S3** using **Multipart Upload** with AWS CLI and PowerShell.
 
-This project demonstrates a manual Amazon S3 Multipart Upload workflow using AWS CLI and PowerShell.
+Instead of uploading the complete file as one object, the file is divided into smaller parts. Each part is uploaded separately and finally all parts are combined into one object in Amazon S3.
 
-A large file is split into smaller parts, each part is uploaded to Amazon S3, the ETag returned for each part is collected, and the multipart upload is completed so S3 creates one final object.
-
-### Demo
-
-- Source file: `movie.mkv`
-- Example source size: 1.3 GiB
-- Part size: 100 MB
-- S3 bucket: `my-vikas-bucket-multi`
-- Final object: `movie-manual.mkv`
-
-## Architecture / Workflow
+## 🏗️ Architecture
 
 ```text
 Large File
-    |
-    v
-PowerShell Split Script
-    |
-    +--> Part 1
-    +--> Part 2
-    +--> Part 3
-    +--> ...
-    |
-    v
-CreateMultipartUpload
-    |
-    v
-UploadId
-    |
-    v
-UploadPart (each part)
-    |
-    v
-ETag for each part
-    |
-    v
-parts.json
-    |
-    v
-CompleteMultipartUpload
-    |
-    v
+    │
+    ▼
+PowerShell
+    │
+    ├── Split file into 100 MB parts
+    │
+    ▼
+File Parts
+    │
+    ▼
+AWS CLI
+    │
+    ├── Create Multipart Upload
+    ├── Upload Part 1
+    ├── Upload Part 2
+    ├── Upload Part 3
+    ├── ...
+    └── Upload Part N
+    │
+    ▼
 Amazon S3
-    |
-    v
-One final object
+    │
+    ▼
+Complete Multipart Upload
+    │
+    ▼
+Final Object
 ```
 
-## Technologies
+## 🛠️ Technologies Used
 
-- Amazon S3
-- AWS CLI
-- PowerShell
-- S3 Multipart Upload API
-- JSON
-- Windows
+* Amazon S3
+* AWS CLI
+* PowerShell
+* Windows
+* JSON
+* Git & GitHub
 
-## Project Structure
+## 🎯 Project Objective
+
+The main objectives of this project are:
+
+* Understand Amazon S3 Multipart Upload.
+* Upload large files in smaller parts.
+* Use AWS CLI for S3 operations.
+* Automate file splitting using PowerShell.
+* Upload individual parts to S3.
+* Collect ETags for uploaded parts.
+* Complete the Multipart Upload.
+* Verify the final object in S3.
+
+## 📂 Project Structure
 
 ```text
-aws-s3-multipart-upload/
-|
+aws-s3-multipart-upload-cli-powershell/
+│
 ├── README.md
-├── .gitignore
 ├── LICENSE
-|
+├── .gitignore
+│
 ├── scripts/
-|   ├── split-movie.ps1
-|   └── upload-multipart.ps1
-|
+│   ├── split-movie.ps1
+│   └── upload-multipart.ps1
+│
 ├── config/
-|   └── example-config.ps1
-|
-├── docs/
-|   ├── aws-s3-multipart-upload-working-diagram.png
-|   └── workflow.md
-|
-└── examples/
-    └── fileparts-example.json
+│   └── fileparts.json
+│
+├── commands/
+│   └── aws-cli-commands.md
+│
+├── screenshots/
+│   ├── 01-file-split.png
+│   ├── 02-create-multipart-upload.png
+│   ├── 03-upload-parts.png
+│   ├── 04-list-parts.png
+│   ├── 05-complete-upload.png
+│   └── 06-s3-final-object.png
+│
+└── docs/
+    └── multipart-upload-workflow.md
 ```
 
-## Prerequisites
+## 🔄 Multipart Upload Workflow
 
-1. An AWS account with an S3 bucket.
-2. AWS CLI installed.
-3. AWS credentials configured securely.
-4. PowerShell.
-5. A large test file.
+### 1. Split the Large File
 
-Check AWS CLI:
+A large file is divided into smaller parts using PowerShell.
 
-```powershell
-aws --version
+Example:
+
+```text
+movie.mkv
+    │
+    ├── part-1
+    ├── part-2
+    ├── part-3
+    ├── ...
+    └── part-N
 ```
 
-Check the active AWS identity:
+In this project, the file is divided into approximately **100 MB parts**.
 
-```powershell
-aws sts get-caller-identity
+### 2. Create Multipart Upload
+
+AWS CLI is used to initiate a Multipart Upload.
+
+```bash
+aws s3api create-multipart-upload \
+    --bucket YOUR_BUCKET_NAME \
+    --key movie.mkv
 ```
 
-Configure credentials using your normal secure AWS CLI setup:
+AWS returns an **UploadId**.
 
-```powershell
+Example:
+
+```text
+UploadId = xxxxxxxxxxxxxxxxx
+```
+
+### 3. Upload Individual Parts
+
+Each file part is uploaded separately.
+
+Example:
+
+```bash
+aws s3api upload-part \
+    --bucket YOUR_BUCKET_NAME \
+    --key movie.mkv \
+    --part-number 1 \
+    --body part-1 \
+    --upload-id YOUR_UPLOAD_ID
+```
+
+The command returns an **ETag**.
+
+Example:
+
+```json
+{
+    "ETag": "\"xxxxxxxxxxxxxxxx\""
+}
+```
+
+### 4. Upload All Parts
+
+The same process is repeated for every part.
+
+```text
+Part 1 → S3 → ETag
+Part 2 → S3 → ETag
+Part 3 → S3 → ETag
+...
+Part N → S3 → ETag
+```
+
+### 5. Store Part Information
+
+The Part Number and ETag are stored in JSON format.
+
+Example:
+
+```json
+{
+  "Parts": [
+    {
+      "PartNumber": 1,
+      "ETag": "ETAG_OF_PART_1"
+    },
+    {
+      "PartNumber": 2,
+      "ETag": "ETAG_OF_PART_2"
+    }
+  ]
+}
+```
+
+### 6. Complete Multipart Upload
+
+After all parts are uploaded, the Multipart Upload is completed.
+
+```bash
+aws s3api complete-multipart-upload \
+    --bucket YOUR_BUCKET_NAME \
+    --key movie.mkv \
+    --upload-id YOUR_UPLOAD_ID \
+    --multipart-upload file://config/fileparts.json
+```
+
+Amazon S3 then combines all uploaded parts into the final object.
+
+## ✅ Final Result
+
+```text
+Local Large File
+       │
+       ▼
+Split into Parts
+       │
+       ▼
+Upload Parts to S3
+       │
+       ▼
+Collect ETags
+       │
+       ▼
+Complete Multipart Upload
+       │
+       ▼
+Final Object in Amazon S3
+```
+
+## 🔐 AWS Configuration
+
+Before running the commands, configure AWS CLI:
+
+```bash
 aws configure
 ```
 
->.
-
-## Step 1 - Split the File
-
-Update these values in `scripts/split-movie.ps1` if required:
-
-```powershell
-$FilePath = "D:\movie\movie.mkv"
-$OutputFolder = "D:\movie\parts"
-$PartSize = 100MB
-```
-
-Run:
-
-```powershell
-cd D:\movie
-Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
-.\split-movie.ps1
-```
-
-The script creates:
+Enter:
 
 ```text
-parts/
-├── part-001
-├── part-002
-├── part-003
-└── ...
+AWS Access Key ID
+AWS Secret Access Key
+Default Region
+Default Output Format
 ```
 
-## Step 2 - Create the Multipart Upload
+> Never upload AWS Access Keys, Secret Keys, `.aws` credentials, or other sensitive information to GitHub.
 
-The low-level S3 API command is:
+## 📸 Project Screenshots
 
-```powershell
-aws s3api create-multipart-upload `
-  --bucket my-vikas-bucket-multi `
-  --key movie-manual.mkv
-```
-
-S3 returns an `UploadId`.
-
-The included `upload-multipart.ps1` captures this automatically, so you do not need to hard-code the UploadId.
-
-## Step 3 - Upload Parts
-
-The API operation is:
-
-```powershell
-aws s3api upload-part
-```
-
-Conceptually:
-
-```powershell
-aws s3api upload-part `
-  --bucket my-vikas-bucket-multi `
-  --key movie-manual.mkv `
-  --part-number 1 `
-  --body "D:\movie\parts\part-001" `
-  --upload-id "UPLOAD_ID"
-```
-
-S3 returns an ETag for each successfully uploaded part.
-
-The included PowerShell script loops through all parts and collects these ETags automatically.
-
-## Step 4 - Verify Parts
-
-You can list uploaded parts with:
-
-```powershell
-aws s3api list-parts `
-  --bucket my-vikas-bucket-multi `
-  --key movie-manual.mkv `
-  --upload-id "UPLOAD_ID"
-```
-
-## Step 5 - Complete the Upload
-
-S3 needs the part numbers and ETags to assemble the final object.
-
-The script automatically creates `parts.json` and calls:
-
-```powershell
-aws s3api complete-multipart-upload `
-  --bucket my-vikas-bucket-multi `
-  --key movie-manual.mkv `
-  --upload-id "UPLOAD_ID" `
-  --multipart-upload file://parts.json
-```
-
-After successful completion, S3 exposes one final object:
+Screenshots demonstrating the project workflow are available in:
 
 ```text
-s3://my-vikas-bucket-multi/movie-manual.mkv
+screenshots/
 ```
 
-## Run the Complete Automated Upload
+They include:
 
-After the parts have been created:
+1. File splitting
+2. Multipart upload creation
+3. Part uploads
+4. Uploaded parts
+5. Multipart upload completion
+6. Final S3 object
 
-```powershell
-cd D:\movie
-Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
-.\upload-multipart.ps1
-```
+## 💡 Why Multipart Upload?
 
-The script automatically:
+Amazon S3 Multipart Upload is useful when working with large files because:
 
-1. Creates the multipart upload.
-2. Gets the UploadId.
-3. Finds all `part-*` files.
-4. Uploads every part.
-5. Collects ETags.
-6. Creates `parts.json`.
-7. Completes the multipart upload.
-8. Prints the final S3 object path.
+* Large files can be uploaded in smaller parts.
+* Parts can be uploaded independently.
+* Failed parts can be retried without restarting the entire upload.
+* Uploads can be automated.
+* It is suitable for large datasets, videos, backups, and other large objects.
 
-## Verify the Final Object
+## 📚 Learning Outcomes
 
-```powershell
-aws s3 ls s3://my-vikas-bucket-multi/
-```
+Through this project, I learned:
 
-## Abort an Incomplete Upload
+* Amazon S3
+* S3 Multipart Upload
+* AWS CLI
+* PowerShell scripting
+* JSON configuration
+* ETags
+* AWS authentication
+* Git & GitHub
+* Large-file upload concepts
 
-If an upload fails before completion, use:
-
-```powershell
-aws s3api abort-multipart-upload `
-  --bucket my-vikas-bucket-multi `
-  --key movie-manual.mkv `
-  --upload-id "UPLOAD_ID"
-```
-
-List incomplete multipart uploads:
-
-```powershell
-aws s3api list-multipart-uploads `
-  --bucket my-vikas-bucket-multi
-```
-
-## What Should NOT Be Committed
-
-Do not commit:
-
-- Large movie/video files
-- Generated multipart parts
-- Real `parts.json` containing actual upload ETags
-- AWS access keys
-- AWS secret keys
-- `.env` files
-- Private credentials
-
-The repository contains scripts and documentation, not the large media file.
-
-## Key AWS Concepts Learned
-
-- Multipart Upload lifecycle
-- UploadId
-- PartNumber
-- ETag
-- CreateMultipartUpload
-- UploadPart
-- ListParts
-- CompleteMultipartUpload
-- AbortMultipartUpload
-- PowerShell automation
-- AWS CLI
-
-## AWS Reference
-
-- AWS re:Post: https://repost.aws/knowledge-center/s3-multipart-upload-cli
-- S3 Multipart Upload overview: https://docs.aws.amazon.com/AmazonS3/latest/userguide/mpuoverview.html
-
-## Author
+## 👨‍💻 Author
 
 **Vikas Jagtap**
 
-AWS / DevOps learning project focused on practical cloud automation.
+GitHub: `https://github.com/vikasjagtap9696`
+
+---
+
+⭐ If you found this project useful, feel free to explore the repository.

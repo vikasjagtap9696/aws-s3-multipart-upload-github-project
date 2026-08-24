@@ -1,25 +1,37 @@
-# Large media files
+# Large files - do not upload to GitHub
 *.mkv
 *.mp4
 *.avi
 *.mov
-*.zip
-*.iso
 
-# Generated multipart parts
+# Split file parts
+part-*
 parts/
-*.part
+uploads/
 
-# Real configuration / secrets
+# AWS credentials
+.aws/
+credentials
+config
+
+# Environment files
 .env
-*.env
-config/*.local.ps1
-config/*.secret.ps1
+.env.*
 
-# Logs and temporary files
-*.log
+# PowerShell temporary files
 *.tmp
+*.temp
 
-# Windows
+# Logs
+*.log
+
+# Windows files
 Thumbs.db
-Desktop.ini
+desktop.ini
+
+# VS Code
+.vscode/
+
+# Temporary files
+*.bak
+*.swp

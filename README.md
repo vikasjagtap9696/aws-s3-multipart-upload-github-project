@@ -259,9 +259,11 @@ Through this project, I learned:
 
 ## 👨‍💻 Author
 
+## 👨‍💻 Author
+
 **Vikas Jagtap**
 
-GitHub: `https://github.com/vikasjagtap9696`
+* GitHub: [github.com/vikasjagtap9696](https://github.com/vikasjagtap9696)
 
 ---
 
